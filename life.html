@@ -1,0 +1,18 @@
+<div></div>
+<script src="./life.js"></script>
+<script>
+  let state = {
+    tool: "draw",
+    color: "#000000",
+    grid: Grid.empty(60, 30, "#f0f0f0")
+  };
+  let app = new GridEditor(state, {
+    tools: {draw},
+    controls: [],
+    dispatch(action) {
+      state = updateState(state, action);
+      app.syncState(state);
+    }
+  });
+  document.querySelector("div").appendChild(app.dom);
+</script>
