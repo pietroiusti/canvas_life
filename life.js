@@ -140,3 +140,66 @@ function draw(pos, state, dispatch) {
   drawPixel(pos, state);
   return drawPixel;
 }
+
+let test = [{x: 1, y: 20, color: "red"}, {x: 20, y: 1, color: "magenta"}];
+
+class startButton {
+  // TODO
+  constructor(state, { dispatch }) {
+    this.dom = elt("button", {
+      onclick: () => {},
+    }, "Start");
+  }
+  syncState() { }
+}
+
+class stopButton {
+  // TODO
+  constructor(state, { dispatch }) {
+    this.dom = elt("button", {
+      onclick: () => {},
+    }, "Stop");
+  }
+  syncState() { }}
+
+class resetButton {
+  // TODO
+  constructor(state, { dispatch }) {
+    this.dom = elt("button", {
+      onclick: () => {},
+    }, "Reset");
+  }
+  syncState() { }
+}
+
+class clearButton {
+  // TODO
+  constructor(state, { dispatch }) {
+    this.dom = elt("button", {
+      onclick: () => {},
+    }, "Clear");
+  }
+  syncState() { }
+}
+
+let startState = {
+  tool: "draw",
+  color: "#000000",
+  grid: Grid.empty(60, 30, "#f0f0f0"),
+};
+
+let baseTools = { draw };
+let baseControls = [startButton, stopButton, resetButton, clearButton];
+function startGridEditor({ state = startState,
+			    tools = baseTools,
+			    controls = baseControls }) {
+  let app = new GridEditor(state, {
+    tools,
+    controls,
+    dispatch(action) {
+      state = updateState(state, action);
+      app.syncState(state);
+    }
+  });
+  return app.dom;
+}
