@@ -8,6 +8,15 @@ class Grid {
     let pixels = new Array(width * height).fill(color);
     return new Grid(width, height, pixels);
   }
+  static random(width, height, color1, color2) {
+    let pixels = new Array(width * height).fill(color1);
+    for (let i = 0; i < (width*height); i++) {
+      if (Math.random() > 0.7) {
+    	pixels[i] = color2;
+      }
+    }
+    return new Grid(width, height, pixels);
+  }
   pixel(x, y) {
     return this.pixels[x + y * this.width];
   }
