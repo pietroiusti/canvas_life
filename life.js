@@ -1,28 +1,28 @@
 class Grid {
-  constructor(width, height, pixels) {
+  constructor(width, height, cells) {
     this.width = width;
     this.height = height;
-    this.pixels = pixels;
+    this.cells = cells;
   }
   static empty(width, height, color) {
-    let pixels = new Array(width * height).fill(color);
-    return new Grid(width, height, pixels);
+    let cells = new Array(width * height).fill(color);
+    return new Grid(width, height, cells);
   }
   static random(width, height, color1, color2) {
-    let pixels = new Array(width * height).fill(color1);
+    let cells = new Array(width * height).fill(color1);
     for (let i = 0; i < (width*height); i++) {
       if (Math.random() > 0.7) {
-    	pixels[i] = color2;
+    	cells[i] = color2;
       }
     }
-    return new Grid(width, height, pixels);
+    return new Grid(width, height, cells);
   }
-  pixel(x, y) {
-    return this.pixels[x + y * this.width];
+  cell(x, y) {
+    return this.cells[x + y * this.width];
   }
-  draw(pixels) {
-    let copy = this.pixels.slice();
-    for (let {x, y, color} of pixels) {
+  draw(cells) {
+    let copy = this.cells.slice();
+    for (let {x, y, color} of cells) {
       copy[x + y * this.width] = color;
     }
     return new Grid(this.width, this.height, copy);
@@ -67,7 +67,7 @@ function drawGrid(grid, canvas, scale) {
 
   for (let y = 0; y < grid.height; y++) {
     for (let x = 0; x < grid.width; x++) {
-      cx.fillStyle = grid.pixel(x, y);
+      cx.fillStyle = grid.cell(x, y);
       cx.fillRect(x * scale, y * scale, scale, scale);
     }
   }
@@ -142,21 +142,21 @@ class GridEditor {
 }
 
 function draw(pos, state, dispatch) {
-  function drawPixel({x, y}, state) {
+  function drawCell({x, y}, state) {
     let drawn = {x, y, color: state.color};
     dispatch({grid: state.grid.draw([drawn])});
   }
-  drawPixel(pos, state);
-  return drawPixel;
+  drawCell(pos, state);
+  return drawCell;
 }
-
-let test = [{x: 1, y: 20, color: "red"}, {x: 20, y: 1, color: "magenta"}];
 
 class startButton {
   // TODO
   constructor(state, { dispatch }) {
     this.dom = elt("button", {
-      onclick: () => {},
+      onclick: () => {
+	console.log(state);
+      },
     }, "Start");
   }
   syncState() { }
@@ -194,7 +194,7 @@ class clearButton {
 let startState = {
   tool: "draw",
   color: "#000000",
-  grid: Grid.empty(60, 30, "#f0f0f0"),
+  grid: Grid.random(60, 30, "#f0f0f0", "#000000"),
 };
 
 let baseTools = { draw };
