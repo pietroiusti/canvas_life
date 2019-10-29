@@ -1,3 +1,5 @@
+"use strict";
+
 class Grid {
   constructor(width, height, cells) {
     this.width = width;
@@ -150,12 +152,20 @@ function draw(pos, state, dispatch) {
   return drawCell;
 }
 
+let autoInterval; // it should always be 1 or undefined
 class startButton {
-  // TODO
   constructor(state, { dispatch }) {
     this.dom = elt("button", {
       onclick: () => {
-	console.log(state);
+	if (!autoInterval) { // if interval it's not on (it's undefined)
+          autoInterval = window.setInterval(() => {
+	    // TODO
+	    // compute new generation
+
+	    // dispatch action
+
+          }, 200);
+	}
       },
     }, "Start");
   }
@@ -163,29 +173,33 @@ class startButton {
 }
 
 class stopButton {
-  // TODO
   constructor(state, { dispatch }) {
     this.dom = elt("button", {
-      onclick: () => {},
+      onclick: () => {
+	window.clearInterval(autoInterval);
+	autoInterval = undefined;
+      },
     }, "Stop");
   }
   syncState() { }}
 
 class resetButton {
-  // TODO
   constructor(state, { dispatch }) {
     this.dom = elt("button", {
-      onclick: () => {},
+      onclick: () => {
+	dispatch({ grid: Grid.random(60, 30, "#f0f0f0", "#000000") });
+      },
     }, "Reset");
   }
   syncState() { }
 }
 
 class clearButton {
-  // TODO
   constructor(state, { dispatch }) {
     this.dom = elt("button", {
-      onclick: () => {},
+      onclick: () => {
+	dispatch({ grid:Grid.empty(60, 30, "#f0f0f0") });
+      },
     }, "Clear");
   }
   syncState() { }
