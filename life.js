@@ -155,21 +155,92 @@ function draw(pos, state, dispatch) {
 let autoInterval; // it should always be 1 or undefined
 class startButton {
   constructor(state, { dispatch }) {
+    this.grid = state.grid;
     this.dom = elt("button", {
       onclick: () => {
 	if (!autoInterval) { // if interval it's not on (it's undefined)
           autoInterval = window.setInterval(() => {
-	    // TODO
-	    // compute new generation
-
-	    // dispatch action
-
+	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
+	    dispatch({ grid: newGen });
+	    this.grid = newGen;
           }, 200);
 	}
       },
     }, "Start");
   }
   syncState() { }
+}
+
+function newGeneration(grid, deadColor, aliveColor) {
+  let next = [];
+  let neighborIndexes;
+  let neighborValues;
+
+  for (let y = 0; y < grid.height; y++) {
+    for (let x = 0; x < grid.width; x++) {
+      let cell = x + y * grid.width;
+
+      if (x === 0) {
+        if (y === 0) {
+          neighborIndexes = [cell + 1, cell + grid.width, cell + (grid.width + 1)];
+        } else if (y === grid.height - 1) {
+          neighborIndexes = [cell + 1, cell - (grid.width - 1), cell - grid.width];
+        } else {
+          neighborIndexes = [cell + 1, cell - (grid.width - 1), cell + grid.width, cell - grid.width, cell + (grid.width + 1)];
+        }
+      } else if (x === grid.width - 1) {
+        if (y === grid.height - 1) {
+          neighborIndexes = [cell - 1, cell - grid.width, cell - (grid.width + 1)];
+        } else if (y === 0) {
+          neighborIndexes = [cell - 1, cell + (grid.width - 1), cell + grid.width];
+        } else {
+          neighborIndexes = [cell - 1, cell + (grid.width - 1), cell + grid.width, cell - grid.width, cell - (grid.width + 1)];
+        }
+      } else if (y === grid.height - 1) {
+        neighborIndexes = [cell + 1, cell - 1, cell - (grid.width - 1), cell - grid.width, cell - (grid.width + 1)];
+      } else if (y === 0) {
+        neighborIndexes = [cell + 1, cell - 1, cell + (grid.width - 1), cell + grid.width, cell + (grid.width + 1)];
+      } else {
+        neighborIndexes = [cell + 1, cell - 1, cell + (grid.width - 1), cell - (grid.width - 1), cell + grid.width, cell - grid.width, cell + (grid.width + 1), cell - (grid.width + 1)];
+      }
+      neighborValues = values(grid.cells, neighborIndexes);
+      next.push(updateCell(grid.cells[cell], neighborValues, deadColor, aliveColor));
+    }
+  }
+
+  return new Grid(grid.width, grid.height, next);
+}
+
+// Take cell and array of neighbors, return updated cell.
+function updateCell(cell, neighbors, deadColor, aliveColor) {
+    let liveNeighbors = 0;
+    for (let n of neighbors)
+        if (n === aliveColor)
+          liveNeighbors++;
+
+    if (cell === aliveColor) {
+        if (liveNeighbors < 2 || liveNeighbors > 3)
+            return deadColor; // cell dies :(
+        else if (liveNeighbors === 2 || liveNeighbors == 3)
+            return aliveColor; // cell keeps surviving :)
+    } else if (cell === deadColor) {
+        if (liveNeighbors === 3)
+            return aliveColor; // cell becomes alive :O
+        else
+            return deadColor;
+    }
+}
+
+// Take array of values and an array of indexes of those values.
+// Return array of the values of those indexes.
+// Example:
+// [a, b, c], [0, 2] => [a, c]
+function values(array, indexes) {
+    let result = [];
+    for (let i = 0; i < indexes.length; i++) {
+        result.push(array[indexes[i]]);
+    }
+    return result;
 }
 
 class stopButton {
