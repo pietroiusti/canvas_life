@@ -45,7 +45,7 @@ function elt(type, props, ...children) {
   return dom;
 }
 
-const scale = 30;
+const scale = 5;
 
 class GridCanvas {
   constructor(grid, pointerDown) {
@@ -162,53 +162,55 @@ class startButton {
           autoInterval = window.setInterval(() => {
 	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
 	    dispatch({ grid: newGen });
-	    this.grid = newGen;
-          }, 200);
+          }, 100);
 	}
       },
     }, "Start");
   }
-  syncState() { }
+  syncState(state) {
+    this.grid = state.grid;
+  }
 }
 
 function newGeneration(grid, deadColor, aliveColor) {
+  let width = grid.width, height = grid.height;
   let next = [];
   let neighborIndexes;
   let neighborValues;
 
-  for (let y = 0; y < grid.height; y++) {
-    for (let x = 0; x < grid.width; x++) {
-      let cell = x + y * grid.width;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let cell = x + y * width;
 
       if (x === 0) {
         if (y === 0) {
-          neighborIndexes = [cell + 1, cell + grid.width, cell + (grid.width + 1)];
-        } else if (y === grid.height - 1) {
-          neighborIndexes = [cell + 1, cell - (grid.width - 1), cell - grid.width];
+          neighborIndexes = [cell + 1, cell + width, cell + (width + 1)];
+        } else if (y === height - 1) {
+          neighborIndexes = [cell + 1, cell - (width - 1), cell - width];
         } else {
-          neighborIndexes = [cell + 1, cell - (grid.width - 1), cell + grid.width, cell - grid.width, cell + (grid.width + 1)];
+          neighborIndexes = [cell + 1, cell - (width - 1), cell + width, cell - width, cell + (width + 1)];
         }
-      } else if (x === grid.width - 1) {
-        if (y === grid.height - 1) {
-          neighborIndexes = [cell - 1, cell - grid.width, cell - (grid.width + 1)];
+      } else if (x === width - 1) {
+        if (y === height - 1) {
+          neighborIndexes = [cell - 1, cell - width, cell - (width + 1)];
         } else if (y === 0) {
-          neighborIndexes = [cell - 1, cell + (grid.width - 1), cell + grid.width];
+          neighborIndexes = [cell - 1, cell + (width - 1), cell + width];
         } else {
-          neighborIndexes = [cell - 1, cell + (grid.width - 1), cell + grid.width, cell - grid.width, cell - (grid.width + 1)];
+          neighborIndexes = [cell - 1, cell + (width - 1), cell + width, cell - width, cell - (width + 1)];
         }
-      } else if (y === grid.height - 1) {
-        neighborIndexes = [cell + 1, cell - 1, cell - (grid.width - 1), cell - grid.width, cell - (grid.width + 1)];
+      } else if (y === height - 1) {
+        neighborIndexes = [cell + 1, cell - 1, cell - (width - 1), cell - width, cell - (width + 1)];
       } else if (y === 0) {
-        neighborIndexes = [cell + 1, cell - 1, cell + (grid.width - 1), cell + grid.width, cell + (grid.width + 1)];
+        neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell + width, cell + (width + 1)];
       } else {
-        neighborIndexes = [cell + 1, cell - 1, cell + (grid.width - 1), cell - (grid.width - 1), cell + grid.width, cell - grid.width, cell + (grid.width + 1), cell - (grid.width + 1)];
+        neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell - (width - 1), cell + width, cell - width, cell + (width + 1), cell - (width + 1)];
       }
       neighborValues = values(grid.cells, neighborIndexes);
       next.push(updateCell(grid.cells[cell], neighborValues, deadColor, aliveColor));
     }
   }
 
-  return new Grid(grid.width, grid.height, next);
+  return new Grid(width, height, next);
 }
 
 // Take cell and array of neighbors, return updated cell.
@@ -256,20 +258,28 @@ class stopButton {
 
 class resetButton {
   constructor(state, { dispatch }) {
+    this.grid = state.grid;
     this.dom = elt("button", {
       onclick: () => {
-	dispatch({ grid: Grid.random(60, 30, "#f0f0f0", "#000000") });
+	window.clearInterval(autoInterval);
+	autoInterval = undefined;
+	dispatch({ grid: Grid.random(this.grid.width, this.grid.height, "#f0f0f0", "#000000") });
       },
     }, "Reset");
   }
-  syncState() { }
+  syncState(state) {
+    this.grid = state.grid; 
+  }
 }
 
 class clearButton {
   constructor(state, { dispatch }) {
+    this.grid = state.grid;
     this.dom = elt("button", {
       onclick: () => {
-	dispatch({ grid:Grid.empty(60, 30, "#f0f0f0") });
+	window.clearInterval(autoInterval);
+	autoInterval = undefined;
+	dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0") });
       },
     }, "Clear");
   }
@@ -279,7 +289,7 @@ class clearButton {
 let startState = {
   tool: "draw",
   color: "#000000",
-  grid: Grid.random(60, 30, "#f0f0f0", "#000000"),
+  grid: Grid.random(300, 160, "#f0f0f0", "#000000"),
 };
 
 let baseTools = { draw };
