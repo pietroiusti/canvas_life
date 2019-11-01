@@ -162,7 +162,7 @@ class startButton {
           autoInterval = window.setInterval(() => {
 	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
 	    dispatch({ grid: newGen });
-          }, 100);
+          }, 180);
 	}
       },
     }, "Start");
