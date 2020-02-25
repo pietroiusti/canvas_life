@@ -45,7 +45,7 @@ function elt(type, props, ...children) {
   return dom;
 }
 
-const scale = 5;
+const scale = 10;
 
 class GridCanvas {
   constructor(grid, pointerDown) {
@@ -289,7 +289,7 @@ class clearButton {
 let startState = {
   tool: "draw",
   color: "#000000",
-  grid: Grid.random(300, 160, "#f0f0f0", "#000000"),
+  grid: Grid.random(80, 50, "#f0f0f0", "#000000"),
 };
 
 let baseTools = { draw };
