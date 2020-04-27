@@ -286,6 +286,21 @@ class clearButton {
   syncState() { }
 }
 
+class eraserButton {
+  constructor(state, { dispatch }) {
+    this.dom = elt("button", {
+      onclick: () => {
+	// console.log(state.color);
+	// if (state.color === "#000000")
+	//   dispatch({ color: "#f0f0f0" });
+	// else
+	//   dispatch({ color: "#000000" });
+      },
+    }, "Eraser");
+  }
+  syncState() {}
+}
+
 let startState = {
   tool: "draw",
   color: "#000000",
@@ -293,7 +308,7 @@ let startState = {
 };
 
 let baseTools = { draw };
-let baseControls = [startButton, stopButton, resetButton, clearButton];
+let baseControls = [startButton, stopButton, resetButton, clearButton, eraserButton];
 function startGridEditor({ state = startState,
 			    tools = baseTools,
 			    controls = baseControls }) {
@@ -307,3 +322,5 @@ function startGridEditor({ state = startState,
   });
   return app.dom;
 }
+
+document.querySelector("div").appendChild(startGridEditor({}));
