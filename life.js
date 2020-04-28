@@ -286,15 +286,14 @@ class clearButton {
   syncState() { }
 }
 
+// TODO: change button's style when clicked
 class eraserButton {
   constructor(state, { dispatch }) {
+    this.active = false;
     this.dom = elt("button", {
       onclick: () => {
-	// console.log(state.color);
-	// if (state.color === "#000000")
-	//   dispatch({ color: "#f0f0f0" });
-	// else
-	//   dispatch({ color: "#000000" });
+	this.active = this.active === false ? true : false;
+	dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
       },
     }, "Eraser");
   }
@@ -308,7 +307,9 @@ let startState = {
 };
 
 let baseTools = { draw };
+
 let baseControls = [startButton, stopButton, resetButton, clearButton, eraserButton];
+
 function startGridEditor({ state = startState,
 			    tools = baseTools,
 			    controls = baseControls }) {
