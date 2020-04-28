@@ -286,14 +286,15 @@ class clearButton {
   syncState() { }
 }
 
-// TODO: change button's style when clicked
 class eraserButton {
   constructor(state, { dispatch }) {
     this.active = false;
     this.dom = elt("button", {
-      onclick: () => {
+      onclick: event => {
+	console.log(event);
 	this.active = this.active === false ? true : false;
 	dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
+	event.target.style.background = this.active ? "red" : "";
       },
     }, "Eraser");
   }
