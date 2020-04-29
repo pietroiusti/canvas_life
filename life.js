@@ -45,7 +45,7 @@ function elt(type, props, ...children) {
   return dom;
 }
 
-const scale = 10;
+const scale = 13;
 
 class GridCanvas {
   constructor(grid, pointerDown) {
@@ -132,9 +132,9 @@ class GridEditor {
     });
     this.controls = controls.map(
       Control => new Control(state, config));
-    this.dom = elt("div", {}, this.canvas.dom, elt("br"),
-                   ...this.controls.reduce(
-                     (a, c) => a.concat(" ", c.dom), []));
+    this.dom = elt("div", {id: "gridEditor"}, this.canvas.dom, elt("br"),
+		   elt("div", {id: "controls"}, ...this.controls.reduce(
+                     (a, c) => a.concat(" ", c.dom), [])));
   }
   syncState(state) {
     this.state = state;
@@ -157,6 +157,7 @@ class startButton {
   constructor(state, { dispatch }) {
     this.grid = state.grid;
     this.dom = elt("button", {
+      className: "button",
       onclick: () => {
 	if (!autoInterval) { // if interval it's not on (it's undefined)
           autoInterval = window.setInterval(() => {
@@ -248,18 +249,21 @@ function values(array, indexes) {
 class stopButton {
   constructor(state, { dispatch }) {
     this.dom = elt("button", {
+      className: "button",
       onclick: () => {
 	window.clearInterval(autoInterval);
 	autoInterval = undefined;
       },
     }, "Stop");
   }
-  syncState() { }}
+  syncState() { }
+}
 
 class resetButton {
   constructor(state, { dispatch }) {
     this.grid = state.grid;
     this.dom = elt("button", {
+      className: "button",
       onclick: () => {
 	window.clearInterval(autoInterval);
 	autoInterval = undefined;
@@ -276,6 +280,7 @@ class clearButton {
   constructor(state, { dispatch }) {
     this.grid = state.grid;
     this.dom = elt("button", {
+      className: "button",
       onclick: () => {
 	window.clearInterval(autoInterval);
 	autoInterval = undefined;
@@ -290,8 +295,8 @@ class eraserButton {
   constructor(state, { dispatch }) {
     this.active = false;
     this.dom = elt("button", {
+      className: "button",
       onclick: event => {
-	console.log(event);
 	this.active = this.active === false ? true : false;
 	dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
 	event.target.style.background = this.active ? "red" : "";
@@ -304,7 +309,7 @@ class eraserButton {
 let startState = {
   tool: "draw",
   color: "#000000",
-  grid: Grid.random(80, 50, "#f0f0f0", "#000000"),
+  grid: Grid.random(100, 60, "#f0f0f0", "#000000"),
 };
 
 let baseTools = { draw };
