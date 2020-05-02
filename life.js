@@ -45,7 +45,7 @@ function elt(type, props, ...children) {
   return dom;
 }
 
-const scale = 13;
+const scale = 12;
 
 class GridCanvas {
   constructor(grid, pointerDown) {
@@ -159,6 +159,7 @@ class startButton {
     this.dom = elt("button", {
       className: "button",
       onclick: () => {
+	//console.log(this.grid);
 	if (!autoInterval) { // if interval it's not on (it's undefined)
           autoInterval = window.setInterval(() => {
 	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
@@ -309,7 +310,7 @@ class eraserButton {
 let startState = {
   tool: "draw",
   color: "#000000",
-  grid: Grid.random(100, 60, "#f0f0f0", "#000000"),
+  grid: new Grid(100, 60, patterns.gosperGliderGun) //Grid.random(100, 60, "#f0f0f0", "#000000"),
 };
 
 let baseTools = { draw };
@@ -331,3 +332,4 @@ function startGridEditor({ state = startState,
 }
 
 document.querySelector("div").appendChild(startGridEditor({}));
+
