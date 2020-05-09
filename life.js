@@ -260,7 +260,7 @@ class stopButton {
   syncState() { }
 }
 
-class resetButton {
+class randomButton {
   constructor(state, { dispatch }) {
     this.grid = state.grid;
     this.dom = elt("button", {
@@ -270,7 +270,7 @@ class resetButton {
 	autoInterval = undefined;
 	dispatch({ grid: Grid.random(this.grid.width, this.grid.height, "#f0f0f0", "#000000") });
       },
-    }, "Reset");
+    }, "Random");
   }
   syncState(state) {
     this.grid = state.grid; 
@@ -307,6 +307,25 @@ class eraserButton {
   syncState() {}
 }
 
+class patternSelect {
+  constructor(state, { dispatch }) {
+    this.grid = state.grid;
+    this.dom = elt("select", {id: "pattern",
+			      onchange: (e) => {
+				window.clearInterval(autoInterval);
+				autoInterval = undefined;
+				let pattern = e.target.value;
+				dispatch({grid: new Grid(100, 60, patterns[pattern])});
+			      }
+			     },
+		   elt("option", {value: "gosperGliderGun"}, "Gosper Glider Gun"),
+		   elt("option", {value: "test"}, "test"));
+  }
+  syncState(state) {
+    this.grid = state.grid;
+  }
+}
+
 let startState = {
   tool: "draw",
   color: "#000000",
@@ -315,7 +334,7 @@ let startState = {
 
 let baseTools = { draw };
 
-let baseControls = [startButton, stopButton, resetButton, clearButton, eraserButton];
+let baseControls = [patternSelect, startButton, stopButton, randomButton, clearButton, eraserButton];
 
 function startGridEditor({ state = startState,
 			    tools = baseTools,
