@@ -159,7 +159,7 @@ class startButton {
     this.dom = elt("button", {
       className: "button",
       onclick: () => {
-	//console.log(this.grid);
+	console.log(this.grid);
 	if (!autoInterval) { // if interval it's not on (it's undefined)
           autoInterval = window.setInterval(() => {
 	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
@@ -319,7 +319,9 @@ class patternSelect {
 			      }
 			     },
 		   elt("option", {value: "gosperGliderGun"}, "Gosper Glider Gun"),
-		   elt("option", {value: "test"}, "test"));
+		   elt("option", {value: "glider"}, "Glider"),
+		   elt("option", {value: "tumbler"}, "Tumbler")
+		  );
   }
   syncState(state) {
     this.grid = state.grid;
