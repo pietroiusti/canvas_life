@@ -306,9 +306,9 @@ class patternSelect {
 				  dispatch({grid: new Grid(100, 60, patterns[pattern])});
 			      }
 			     },
-		   elt("option", {value: "gosperGliderGun"}, "Gosper Glider Gun"),
-		   elt("option", {value: "glider"}, "Glider"),
-		   elt("option", {value: "tumbler"}, "Tumbler"),
+		   ...Object.keys(patterns).map(function(key, index) {
+		     return elt("option", {value: key}, key);
+		   }),
 		   elt("option", {value: "random"}, "Random")
 		  );
   }
