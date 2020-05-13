@@ -306,9 +306,7 @@ class patternSelect {
 				  dispatch({grid: new Grid(100, 60, patterns[pattern])});
 			      }
 			     },
-		   ...Object.keys(patterns).map(function(key, index) {
-		     return elt("option", {value: key}, key);
-		   }),
+		   ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, key)),
 		   elt("option", {value: "random"}, "Random")
 		  );
   }
