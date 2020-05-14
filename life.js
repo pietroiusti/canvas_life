@@ -303,10 +303,11 @@ class patternSelect {
 							       this.grid.height,
 							       "#f0f0f0", "#000000") });
 				} else
-				  dispatch({grid: new Grid(100, 60, patterns[pattern])});
+				  dispatch({grid: new Grid(100, 60, patterns[pattern].cells)});
 			      }
 			     },
-		   ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, key)),
+		   ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
+		   // ...patterns.map((p) => elt("option", {value: p.valueId}, p.name)),
 		   elt("option", {value: "random"}, "Random")
 		  );
   }
@@ -318,7 +319,7 @@ class patternSelect {
 let startState = {
   tool: "draw",
   color: "#000000",
-  grid: new Grid(100, 60, patterns.gosperGliderGun) //Grid.random(100, 60, "#f0f0f0", "#000000"),
+  grid: new Grid(100, 60, patterns.gosperGliderGun.cells) //Grid.random(100, 60, "#f0f0f0", "#000000"),
 };
 
 let baseTools = { draw };
