@@ -313,7 +313,12 @@ class patternSelect {
   syncState() {}
 }
 
+class speedButton {
+  constructor(state, { dispatch }) {
+    this.dom = elt("span", {},
+		   elt("button", {}, "-"), " ", "speed", " ", elt("button", {}, "+"));
   }
+  syncState() {}
 }
 
 let startState = {
@@ -324,7 +329,7 @@ let startState = {
 
 let baseTools = { draw };
 
-let baseControls = [patternSelect, startButton, stopButton, clearButton, eraserButton];
+let baseControls = [patternSelect, startButton, stopButton, clearButton, eraserButton, speedButton];
 
 function startGridEditor({ state = startState,
 			    tools = baseTools,
