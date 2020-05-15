@@ -307,12 +307,12 @@ class patternSelect {
 			      }
 			     },
 		   ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
-		   // ...patterns.map((p) => elt("option", {value: p.valueId}, p.name)),
 		   elt("option", {value: "random"}, "Random")
 		  );
   }
-  syncState(state) {
-    this.grid = state.grid;
+  syncState() {}
+}
+
   }
 }
 
