@@ -153,6 +153,7 @@ function draw(pos, state, dispatch) {
 }
 
 let autoInterval; // it should always be 1 or undefined
+let speed = 180;
 class startButton {
   constructor(state, { dispatch }) {
     this.grid = state.grid;
@@ -164,7 +165,7 @@ class startButton {
           autoInterval = window.setInterval(() => {
 	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
 	    dispatch({ grid: newGen });
-          }, 180);
+          }, speed);
 	}
       },
     }, "Start");
@@ -313,12 +314,42 @@ class patternSelect {
   syncState() {}
 }
 
-class speedButton {
+class speedButtons {
   constructor(state, { dispatch }) {
+    this.grid = state.grid;
     this.dom = elt("span", {},
-		   elt("button", {}, "-"), " ", "speed", " ", elt("button", {}, "+"));
+		   elt("button", {
+		     onclick: () => {
+		       if (autoInterval) {
+			 speed += 30;
+			 window.clearInterval(autoInterval);
+			 autoInterval = window.setInterval(() => {
+			   let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
+			   dispatch({ grid: newGen });
+			 }, speed);
+		       } else {
+			 speed += 20;
+		       }
+		     }
+		   }, "-"), " ", "speed", " ",
+		   elt("button", {
+		     onclick: () => {
+		       if (autoInterval) {
+			 speed -= 30;
+			 window.clearInterval(autoInterval);
+			 autoInterval = window.setInterval(() => {
+			   let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
+			   dispatch({ grid: newGen });
+			 }, speed);
+		       } else {
+			 speed -= 20;
+		       }
+		     }
+		   }, "+"));
   }
-  syncState() {}
+  syncState(state) {
+    this.grid = state.grid;
+  }
 }
 
 let startState = {
@@ -329,11 +360,11 @@ let startState = {
 
 let baseTools = { draw };
 
-let baseControls = [patternSelect, startButton, stopButton, clearButton, eraserButton, speedButton];
+let baseControls = [patternSelect, startButton, stopButton, clearButton, eraserButton, speedButtons];
 
 function startGridEditor({ state = startState,
-			    tools = baseTools,
-			    controls = baseControls }) {
+			   tools = baseTools,
+			   controls = baseControls }) {
   let app = new GridEditor(state, {
     tools,
     controls,
