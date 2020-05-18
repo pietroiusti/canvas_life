@@ -152,29 +152,6 @@ function draw(pos, state, dispatch) {
   return drawCell;
 }
 
-let autoInterval; // it should always be 1 or undefined
-let speed = 180;
-class startButton {
-  constructor(state, { dispatch }) {
-    this.grid = state.grid;
-    this.dom = elt("button", {
-      className: "button",
-      onclick: () => {
-	console.log(this.grid);
-	if (!autoInterval) { // if interval it's not on (it's undefined)
-          autoInterval = window.setInterval(() => {
-	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
-	    dispatch({ grid: newGen });
-          }, speed);
-	}
-      },
-    }, "Start");
-  }
-  syncState(state) {
-    this.grid = state.grid;
-  }
-}
-
 function newGeneration(grid, deadColor, aliveColor) {
   let width = grid.width, height = grid.height;
   let next = [];
@@ -248,17 +225,45 @@ function values(array, indexes) {
     return result;
 }
 
+class startButton {
+  constructor(state, { dispatch }) {
+    this.grid = state.grid;
+    this.interval = state.interval;
+    this.speed = state.speed;
+    this.dom = elt("button", {
+      className: "button",
+      onclick: () => {
+	console.log(this.grid);
+	if (!this.interval) { // if interval it's not on (it's undefined)
+          let autoInterval = window.setInterval(() => {
+	    let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
+	    dispatch({ grid: newGen });
+          }, this.speed);
+	  dispatch({ interval: autoInterval });
+	}
+      },
+    }, "Start");
+  }
+  syncState(state) {
+    this.grid = state.grid;
+    this.interval = state.interval;
+    this.speed = state.speed;
+  }
+}
+
 class stopButton {
   constructor(state, { dispatch }) {
     this.dom = elt("button", {
       className: "button",
       onclick: () => {
-	window.clearInterval(autoInterval);
-	autoInterval = undefined;
+	window.clearInterval(this.interval);
+	dispatch({ interval: undefined });
       },
     }, "Stop");
   }
-  syncState() { }
+  syncState(state) {
+    this.interval = state.interval;
+  }
 }
 
 class clearButton {
@@ -267,13 +272,14 @@ class clearButton {
     this.dom = elt("button", {
       className: "button",
       onclick: () => {
-	window.clearInterval(autoInterval);
-	autoInterval = undefined;
-	dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0") });
+	window.clearInterval(this.interval);
+	dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0"), interval: undefined });
       },
     }, "Clear");
   }
-  syncState() { }
+  syncState(state) {
+    this.interval = state.interval;
+  }
 }
 
 class eraserButton {
@@ -296,8 +302,8 @@ class patternSelect {
     this.grid = state.grid;
     this.dom = elt("select", {id: "pattern",
 			      onchange: (e) => {
-				window.clearInterval(autoInterval);
-				autoInterval = undefined;
+				window.clearInterval(this.interval);
+				dispatch({ interval: undefined });
 				let pattern = e.target.value;
 				if (pattern === "random") {
 				  dispatch({ grid: Grid.random(this.grid.width,
@@ -311,7 +317,9 @@ class patternSelect {
 		   elt("option", {value: "random"}, "Random")
 		  );
   }
-  syncState() {}
+  syncState(state) {
+    this.interval = state.interval;
+  }
 }
 
 class speedButtons {
@@ -320,42 +328,48 @@ class speedButtons {
     this.dom = elt("span", {},
 		   elt("button", {
 		     onclick: () => {
-		       if (autoInterval) {
-			 speed += 30;
-			 window.clearInterval(autoInterval);
-			 autoInterval = window.setInterval(() => {
+		       if (this.interval) {
+			 let speed = this.speed + 30;
+			 window.clearInterval(this.interval);
+			 let autoInterval = window.setInterval(() => {
 			   let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
 			   dispatch({ grid: newGen });
 			 }, speed);
+			 dispatch({ interval: autoInterval, speed: speed });
 		       } else {
-			 speed += 20;
+			 dispatch({ speed: this.speed + 30 });
 		       }
 		     }
 		   }, "-"), " ", "speed", " ",
 		   elt("button", {
 		     onclick: () => {
-		       if (autoInterval) {
-			 speed -= 30;
-			 window.clearInterval(autoInterval);
-			 autoInterval = window.setInterval(() => {
+		       if (this.interval) {
+			 let speed = this.speed - 30;
+			 window.clearInterval(this.interval);
+			 let autoInterval = window.setInterval(() => {
 			   let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
 			   dispatch({ grid: newGen });
 			 }, speed);
+			 dispatch({ interval: autoInterval, speed: speed });
 		       } else {
-			 speed -= 20;
+			 dispatch({ speed: this.speed - 30 });
 		       }
 		     }
 		   }, "+"));
   }
   syncState(state) {
     this.grid = state.grid;
+    this.interval = state.interval;
+    this.speed = state.speed;
   }
 }
 
 let startState = {
   tool: "draw",
   color: "#000000",
-  grid: new Grid(100, 60, patterns.gosperGliderGun.cells) //Grid.random(100, 60, "#f0f0f0", "#000000"),
+  grid: new Grid(100, 60, patterns.gosperGliderGun.cells), //Grid.random(100, 60, "#f0f0f0", "#000000"),
+  interval: undefined,
+  speed: 180,
 };
 
 let baseTools = { draw };
