@@ -122,12 +122,11 @@ GridCanvas.prototype.touch = function(startEvent,
 
 class GridEditor {
   constructor(state, config) {
-    let {tools, controls, dispatch} = config;
+    let {controls, dispatch} = config;
     this.state = state;
 
     this.canvas = new GridCanvas(state.grid, pos => {
-      let tool = tools[this.state.tool];
-      let onMove = tool(pos, this.state, dispatch);
+      let onMove = draw(pos, this.state, dispatch);
       if (onMove) return pos => onMove(pos, this.state);
     });
     this.controls = controls.map(
@@ -365,22 +364,17 @@ class speedButtons {
 }
 
 let startState = {
-  tool: "draw",
   color: "#000000",
   grid: new Grid(100, 60, patterns.gosperGliderGun.cells), //Grid.random(100, 60, "#f0f0f0", "#000000"),
   interval: undefined,
   speed: 180,
 };
 
-let baseTools = { draw };
-
 let baseControls = [patternSelect, startButton, stopButton, clearButton, eraserButton, speedButtons];
 
 function startGridEditor({ state = startState,
-			   tools = baseTools,
 			   controls = baseControls }) {
   let app = new GridEditor(state, {
-    tools,
     controls,
     dispatch(action) {
       state = updateState(state, action);
