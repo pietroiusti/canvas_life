@@ -384,6 +384,6 @@
     return app.dom;
   }
 
-  document.querySelector("div").appendChild(startGridEditor({}));
+  document.querySelector("#main").appendChild(startGridEditor({}));
 
 })();
