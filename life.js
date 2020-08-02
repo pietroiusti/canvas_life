@@ -15,9 +15,9 @@
     static random(width, height, color1, color2) {
       let cells = new Array(width * height).fill(color1);
       for (let i = 0; i < (width*height); i++) {
-	if (Math.random() > 0.7) {
+		if (Math.random() > 0.7) {
     	  cells[i] = color2;
-	}
+		}
       }
       return new Grid(width, height, cells);
     }
@@ -27,7 +27,7 @@
     draw(cells) {
       let copy = this.cells.slice();
       for (let {x, y, color} of cells) {
-	copy[x + y * this.width] = color;
+		copy[x + y * this.width] = color;
       }
       return new Grid(this.width, this.height, copy);
     }
@@ -52,8 +52,8 @@
   class GridCanvas {
     constructor(grid, pointerDown) {
       this.dom = elt("canvas", {
-	onmousedown: event => this.mouse(event, pointerDown),
-	ontouchstart: event => this.touch(event, pointerDown)
+		onmousedown: event => this.mouse(event, pointerDown),
+		ontouchstart: event => this.touch(event, pointerDown)
       });
       this.syncState(grid);
     }
@@ -63,7 +63,7 @@
       drawGrid(this.grid, this.dom, scale);
     }
   }
-
+  
   function drawGrid(grid, canvas, scale) {
     canvas.width = grid.width * scale;
     canvas.height = grid.height * scale;
@@ -71,8 +71,8 @@
 
     for (let y = 0; y < grid.height; y++) {
       for (let x = 0; x < grid.width; x++) {
-	cx.fillStyle = grid.cell(x, y);
-	cx.fillRect(x * scale, y * scale, scale, scale);
+		cx.fillStyle = grid.cell(x, y);
+		cx.fillRect(x * scale, y * scale, scale, scale);
       }
     }
   }
@@ -84,12 +84,12 @@
     if (!onMove) return;
     let move = moveEvent => {
       if (moveEvent.buttons == 0) {
-	this.dom.removeEventListener("mousemove", move);
+		this.dom.removeEventListener("mousemove", move);
       } else {
-	let newPos = pointerPosition(moveEvent, this.dom);
-	if (newPos.x == pos.x && newPos.y == pos.y) return;
-	pos = newPos;
-	onMove(newPos);
+		let newPos = pointerPosition(moveEvent, this.dom);
+		if (newPos.x == pos.x && newPos.y == pos.y) return;
+		pos = newPos;
+		onMove(newPos);
       }
     };
     this.dom.addEventListener("mousemove", move);
@@ -128,13 +128,15 @@
       this.state = state;
 
       this.canvas = new GridCanvas(state.grid, pos => {
-	let onMove = draw(pos, this.state, dispatch);
-	if (onMove) return pos => onMove(pos, this.state);
+		let onMove = draw(pos, this.state, dispatch);
+		if (onMove) return pos => onMove(pos, this.state);
       });
+
       this.controls = controls.map(
-	Control => new Control(state, config));
+		Control => new Control(state, config));
+	  
       this.dom = elt("div", {id: "gridEditor"}, this.canvas.dom, elt("br"),
-		     elt("div", {id: "controls"}, ...this.controls.reduce(
+					 elt("div", {id: "controls"}, ...this.controls.reduce(
                        (a, c) => a.concat(" ", c.dom), [])));
     }
     syncState(state) {
@@ -143,7 +145,7 @@
       for (let ctrl of this.controls) ctrl.syncState(state);
     }
   }
-
+  
   function draw(pos, state, dispatch) {
     function drawCell({x, y}, state) {
       let drawn = {x, y, color: state.color};
@@ -161,9 +163,9 @@
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-	let cell = x + y * width;
+		let cell = x + y * width;
 
-	if (x === 0) {
+		if (x === 0) {
           if (y === 0) {
             neighborIndexes = [cell + 1, cell + width, cell + (width + 1)];
           } else if (y === height - 1) {
@@ -171,7 +173,7 @@
           } else {
             neighborIndexes = [cell + 1, cell - (width - 1), cell + width, cell - width, cell + (width + 1)];
           }
-	} else if (x === width - 1) {
+		} else if (x === width - 1) {
           if (y === height - 1) {
             neighborIndexes = [cell - 1, cell - width, cell - (width + 1)];
           } else if (y === 0) {
@@ -179,15 +181,15 @@
           } else {
             neighborIndexes = [cell - 1, cell + (width - 1), cell + width, cell - width, cell - (width + 1)];
           }
-	} else if (y === height - 1) {
+		} else if (y === height - 1) {
           neighborIndexes = [cell + 1, cell - 1, cell - (width - 1), cell - width, cell - (width + 1)];
-	} else if (y === 0) {
+		} else if (y === 0) {
           neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell + width, cell + (width + 1)];
-	} else {
+		} else {
           neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell - (width - 1), cell + width, cell - width, cell + (width + 1), cell - (width + 1)];
-	}
-	neighborValues = values(grid.cells, neighborIndexes);
-	next.push(updateCell(grid.cells[cell], neighborValues, deadColor, aliveColor));
+		}
+		neighborValues = values(grid.cells, neighborIndexes);
+		next.push(updateCell(grid.cells[cell], neighborValues, deadColor, aliveColor));
       }
     }
 
@@ -232,17 +234,17 @@
       this.interval = state.interval;
       this.speed = state.speed;
       this.dom = elt("button", {
-	className: "button",
-	onclick: () => {
-	  console.log(this.grid);
-	  if (!this.interval) { // if interval it's not on (it's undefined)
+		className: "button",
+		onclick: () => {
+		  console.log(this.grid);
+		  if (!this.interval) { // if interval it's not on (it's undefined)
             let autoInterval = window.setInterval(() => {
-	      let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
-	      dispatch({ grid: newGen });
+			  let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
+			  dispatch({ grid: newGen });
             }, this.speed);
-	    dispatch({ interval: autoInterval });
-	  }
-	},
+			dispatch({ interval: autoInterval });
+		  }
+		},
       }, "Start");
     }
     syncState(state) {
@@ -255,11 +257,11 @@
   class stopButton {
     constructor(state, { dispatch }) {
       this.dom = elt("button", {
-	className: "button",
-	onclick: () => {
-	  window.clearInterval(this.interval);
-	  dispatch({ interval: undefined });
-	},
+		className: "button",
+		onclick: () => {
+		  window.clearInterval(this.interval);
+		  dispatch({ interval: undefined });
+		},
       }, "Stop");
     }
     syncState(state) {
@@ -271,11 +273,11 @@
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.dom = elt("button", {
-	className: "button",
-	onclick: () => {
-	  window.clearInterval(this.interval);
-	  dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0"), interval: undefined });
-	},
+		className: "button",
+		onclick: () => {
+		  window.clearInterval(this.interval);
+		  dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0"), interval: undefined });
+		},
       }, "Clear");
     }
     syncState(state) {
@@ -287,12 +289,12 @@
     constructor(state, { dispatch }) {
       this.active = false;
       this.dom = elt("button", {
-	className: "button",
-	onclick: event => {
-	  this.active = this.active === false ? true : false;
-	  dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
-	  event.target.style.background = this.active ? "red" : "";
-	},
+		className: "button",
+		onclick: event => {
+		  this.active = this.active === false ? true : false;
+		  dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
+		  event.target.style.background = this.active ? "red" : "";
+		},
       }, "Eraser");
     }
     syncState() {}
@@ -302,21 +304,21 @@
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.dom = elt("select", {id: "pattern",
-				onchange: (e) => {
-				  window.clearInterval(this.interval);
-				  dispatch({ interval: undefined });
-				  let pattern = e.target.value;
-				  if (pattern === "random") {
-				    dispatch({ grid: Grid.random(this.grid.width,
-								 this.grid.height,
-								 "#f0f0f0", "#000000") });
-				  } else
-				    dispatch({ grid: new Grid(100, 60, patterns[pattern].cells )});
-				}
-			       },
-		     ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
-		     elt("option", {value: "random"}, "Random")
-		    );
+								onchange: (e) => {
+								  window.clearInterval(this.interval);
+								  dispatch({ interval: undefined });
+								  let pattern = e.target.value;
+								  if (pattern === "random") {
+									dispatch({ grid: Grid.random(this.grid.width,
+																 this.grid.height,
+																 "#f0f0f0", "#000000") });
+								  } else
+									dispatch({ grid: new Grid(100, 60, patterns[pattern].cells )});
+								}
+							   },
+					 ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
+					 elt("option", {value: "random"}, "Random")
+					);
     }
     syncState(state) {
       this.interval = state.interval;
@@ -327,34 +329,34 @@
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.dom = elt("span", {},
-		     elt("button", {
-		       onclick: () => {
-			 let speed = this.speed + 30;
-			 if (this.interval) {
-			   window.clearInterval(this.interval);
-			   let autoInterval = window.setInterval(() => {
-			     dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
-			   }, speed);
-			   dispatch({ interval: autoInterval, speed: speed });
-			 } else {
-			   dispatch({ speed: speed });
-			 }
-		       }
-		     }, "-"), " ", "speed", " ",
-		     elt("button", {
-		       onclick: () => {
-			 let speed = this.speed - 30;
-			 if (this.interval) {
-			   window.clearInterval(this.interval);
-			   let autoInterval = window.setInterval(() => {
-			     dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
-			   }, speed);
-			   dispatch({ interval: autoInterval, speed: speed });
-			 } else {
-			   dispatch({ speed: speed });
-			 }
-		       }
-		     }, "+"));
+					 elt("button", {
+					   onclick: () => {
+						 let speed = this.speed + 30;
+						 if (this.interval) {
+						   window.clearInterval(this.interval);
+						   let autoInterval = window.setInterval(() => {
+							 dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
+						   }, speed);
+						   dispatch({ interval: autoInterval, speed: speed });
+						 } else {
+						   dispatch({ speed: speed });
+						 }
+					   }
+					 }, "-"), " ", "speed", " ",
+					 elt("button", {
+					   onclick: () => {
+						 let speed = this.speed - 30;
+						 if (this.interval) {
+						   window.clearInterval(this.interval);
+						   let autoInterval = window.setInterval(() => {
+							 dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
+						   }, speed);
+						   dispatch({ interval: autoInterval, speed: speed });
+						 } else {
+						   dispatch({ speed: speed });
+						 }
+					   }
+					 }, "+"));
     }
     syncState(state) {
       this.grid = state.grid;
@@ -373,12 +375,12 @@
   let baseControls = [patternSelect, startButton, stopButton, clearButton, eraserButton, speedButtons];
 
   function startGridEditor({ state = startState,
-			     controls = baseControls }) {
+							 controls = baseControls }) {
     let app = new GridEditor(state, {
       controls,
       dispatch(action) {
-	state = updateState(state, action);
-	app.syncState(state);
+		state = updateState(state, action);
+		app.syncState(state);
       }
     });
     return app.dom;
