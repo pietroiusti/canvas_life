@@ -8,15 +8,28 @@
       this.height = height;
       this.cells = cells;
     }
-    static empty(width, height, color) {
-      let cells = new Array(width * height).fill(color);
+    // static empty(width, height, color) {
+    //   let cells = new Array(width * height).fill(color);
+    //   return new Grid(width, height, cells);
+    // }
+	static empty(width, height) {
+      let cells = new Array(width * height).fill(0);
       return new Grid(width, height, cells);
     }
-    static random(width, height, color1, color2) {
-      let cells = new Array(width * height).fill(color1);
+    // static random(width, height, color1, color2) {
+    //   let cells = new Array(width * height).fill(color1);
+    //   for (let i = 0; i < (width*height); i++) {
+	// 	if (Math.random() > 0.7) {
+    // 	  cells[i] = color2;
+	// 	}
+    //   }
+    //   return new Grid(width, height, cells);
+    // }
+	static random(width, height) {
+      let cells = new Array(width * height).fill(0);
       for (let i = 0; i < (width*height); i++) {
 		if (Math.random() > 0.7) {
-    	  cells[i] = color2;
+    	  cells[i] = 1;
 		}
       }
       return new Grid(width, height, cells);
@@ -24,10 +37,23 @@
     cell(x, y) {
       return this.cells[x + y * this.width];
     }
+    // draw(cells) {
+    //   let copy = this.cells.slice();
+    //   for (let {x, y, color} of cells) {
+	// 	copy[x + y * this.width] = color;
+    //   }
+    //   return new Grid(this.width, this.height, copy);
+    // }
+
+	// Take an array of objects that represent the cells that are to
+	// be updated. The objects have x and y properties to get the
+	// position and state property to know whether the cell should be
+	// made alive or dead. Create a copy of the current cells, change
+	// them accordingly and return a new grid.
     draw(cells) {
       let copy = this.cells.slice();
-      for (let {x, y, color} of cells) {
-		copy[x + y * this.width] = color;
+      for (let {x, y, state} of cells) {
+		copy[x + y * this.width] = state;
       }
       return new Grid(this.width, this.height, copy);
     }
@@ -64,6 +90,7 @@
     }
   }
   
+  // Draw grid on a canvas element (scaling)
   function drawGrid(grid, canvas, scale) {
     canvas.width = grid.width * scale;
     canvas.height = grid.height * scale;
@@ -71,7 +98,8 @@
 
     for (let y = 0; y < grid.height; y++) {
       for (let x = 0; x < grid.width; x++) {
-		cx.fillStyle = grid.cell(x, y);
+		//cx.fillStyle = grid.cell(x, y);
+		cx.fillStyle = grid.cell(x, y) === 0 ? "#f0f0f0" : "#000000";
 		cx.fillRect(x * scale, y * scale, scale, scale);
       }
     }
@@ -148,14 +176,58 @@
   
   function draw(pos, state, dispatch) {
     function drawCell({x, y}, state) {
-      let drawn = {x, y, color: state.color};
+      //let drawn = {x, y, color: state.color};
+      let drawn = {x, y, state: state.color === "#000000" ? 1 : 0};
+	  // TODO: don't use a variable that holds a color in the central
+	  // state, but a variable that says whether a cell that gets
+	  // clicked on is going to be made alive or dead
       dispatch({grid: state.grid.draw([drawn])});
     }
     drawCell(pos, state);
     return drawCell;
   }
 
-  function newGeneration(grid, deadColor, aliveColor) {
+  // function newGeneration(grid, deadColor, aliveColor) {
+  //   let width = grid.width, height = grid.height;
+  //   let next = [];
+  //   let neighborIndexes;
+  //   let neighborValues;
+
+  //   for (let y = 0; y < height; y++) {
+  //     for (let x = 0; x < width; x++) {
+  // 		let cell = x + y * width;
+
+  // 		if (x === 0) {
+  //         if (y === 0) {
+  //           neighborIndexes = [cell + 1, cell + width, cell + (width + 1)];
+  //         } else if (y === height - 1) {
+  //           neighborIndexes = [cell + 1, cell - (width - 1), cell - width];
+  //         } else {
+  //           neighborIndexes = [cell + 1, cell - (width - 1), cell + width, cell - width, cell + (width + 1)];
+  //         }
+  // 		} else if (x === width - 1) {
+  //         if (y === height - 1) {
+  //           neighborIndexes = [cell - 1, cell - width, cell - (width + 1)];
+  //         } else if (y === 0) {
+  //           neighborIndexes = [cell - 1, cell + (width - 1), cell + width];
+  //         } else {
+  //           neighborIndexes = [cell - 1, cell + (width - 1), cell + width, cell - width, cell - (width + 1)];
+  //         }
+  // 		} else if (y === height - 1) {
+  //         neighborIndexes = [cell + 1, cell - 1, cell - (width - 1), cell - width, cell - (width + 1)];
+  // 		} else if (y === 0) {
+  //         neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell + width, cell + (width + 1)];
+  // 		} else {
+  //         neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell - (width - 1), cell + width, cell - width, cell + (width + 1), cell - (width + 1)];
+  // 		}
+  // 		neighborValues = values(grid.cells, neighborIndexes);
+  // 		next.push(updateCell(grid.cells[cell], neighborValues, deadColor, aliveColor));
+  //     }
+  //   }
+
+  //   return new Grid(width, height, next);
+  // }
+  function newGeneration(grid) {
     let width = grid.width, height = grid.height;
     let next = [];
     let neighborIndexes;
@@ -189,32 +261,52 @@
           neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell - (width - 1), cell + width, cell - width, cell + (width + 1), cell - (width + 1)];
 		}
 		neighborValues = values(grid.cells, neighborIndexes);
-		next.push(updateCell(grid.cells[cell], neighborValues, deadColor, aliveColor));
+		next.push(updateCell(grid.cells[cell], neighborValues));
       }
     }
 
     return new Grid(width, height, next);
   }
 
+
   // Take cell and array of neighbors, return updated cell.
-  function updateCell(cell, neighbors, deadColor, aliveColor) {
+  // function updateCell(cell, neighbors, deadColor, aliveColor) {
+  //   let liveNeighbors = 0;
+  //   for (let n of neighbors)
+  //     if (n === aliveColor)
+  //       liveNeighbors++;
+
+  //   if (cell === aliveColor) {
+  //     if (liveNeighbors < 2 || liveNeighbors > 3)
+  //       return deadColor; // cell dies :(
+  //     else if (liveNeighbors === 2 || liveNeighbors == 3)
+  //       return aliveColor; // cell keeps surviving :)
+  //   } else if (cell === deadColor) {
+  //     if (liveNeighbors === 3)
+  //       return aliveColor; // cell becomes alive :O
+  //     else
+  //       return deadColor;
+  //   }
+  // }
+  function updateCell(cell, neighbors) {
     let liveNeighbors = 0;
     for (let n of neighbors)
-      if (n === aliveColor)
+      if (n === 1)
         liveNeighbors++;
 
-    if (cell === aliveColor) {
+    if (cell === 1) {
       if (liveNeighbors < 2 || liveNeighbors > 3)
-        return deadColor; // cell dies :(
+        return 0; // cell dies :(
       else if (liveNeighbors === 2 || liveNeighbors == 3)
-        return aliveColor; // cell keeps surviving :)
-    } else if (cell === deadColor) {
+        return 1; // cell keeps surviving :)
+    } else if (cell === 0) {
       if (liveNeighbors === 3)
-        return aliveColor; // cell becomes alive :O
+        return 1; // cell becomes alive :O
       else
-        return deadColor;
+        return 0;
     }
   }
+
 
   // Take array of values and an array of indexes of those values.
   // Return array of the values of those indexes.
@@ -239,7 +331,7 @@
 		  console.log(this.grid);
 		  if (!this.interval) { // if interval it's not on (it's undefined)
             let autoInterval = window.setInterval(() => {
-			  let newGen = newGeneration(this.grid, "#f0f0f0", "#000000");
+			  let newGen = newGeneration(this.grid);
 			  dispatch({ grid: newGen });
             }, this.speed);
 			dispatch({ interval: autoInterval });
@@ -276,7 +368,8 @@
 		className: "button",
 		onclick: () => {
 		  window.clearInterval(this.interval);
-		  dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0"), interval: undefined });
+		  // dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0"), interval: undefined });
+		  dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, 0), interval: undefined });
 		},
       }, "Clear");
     }
@@ -292,7 +385,8 @@
 		className: "button",
 		onclick: event => {
 		  this.active = this.active === false ? true : false;
-		  dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
+		  // dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
+		  dispatch({ color: this.active ? "#f0f0f0" : "#000000"});
 		  event.target.style.background = this.active ? "red" : "";
 		},
       }, "Eraser");
@@ -309,9 +403,11 @@
 								  dispatch({ interval: undefined });
 								  let pattern = e.target.value;
 								  if (pattern === "random") {
+									// dispatch({ grid: Grid.random(this.grid.width,
+									// 							 this.grid.height,
+									// 							 "#f0f0f0", "#000000") });
 									dispatch({ grid: Grid.random(this.grid.width,
-																 this.grid.height,
-																 "#f0f0f0", "#000000") });
+																 this.grid.height) });
 								  } else
 									dispatch({ grid: new Grid(100, 60, patterns[pattern].cells )});
 								}
@@ -335,7 +431,8 @@
 						 if (this.interval) {
 						   window.clearInterval(this.interval);
 						   let autoInterval = window.setInterval(() => {
-							 dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
+							 // dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
+							 dispatch({ grid: newGeneration(this.grid) });
 						   }, speed);
 						   dispatch({ interval: autoInterval, speed: speed });
 						 } else {
@@ -349,7 +446,8 @@
 						 if (this.interval) {
 						   window.clearInterval(this.interval);
 						   let autoInterval = window.setInterval(() => {
-							 dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
+							 // dispatch({ grid: newGeneration(this.grid, "#f0f0f0", "#000000") });
+							 dispatch({ grid: newGeneration(this.grid) });
 						   }, speed);
 						   dispatch({ interval: autoInterval, speed: speed });
 						 } else {
