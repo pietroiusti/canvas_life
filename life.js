@@ -8,23 +8,10 @@
       this.height = height;
       this.cells = cells;
     }
-    // static empty(width, height, color) {
-    //   let cells = new Array(width * height).fill(color);
-    //   return new Grid(width, height, cells);
-    // }
 	static empty(width, height) {
       let cells = new Array(width * height).fill(0);
       return new Grid(width, height, cells);
     }
-    // static random(width, height, color1, color2) {
-    //   let cells = new Array(width * height).fill(color1);
-    //   for (let i = 0; i < (width*height); i++) {
-	// 	if (Math.random() > 0.7) {
-    // 	  cells[i] = color2;
-	// 	}
-    //   }
-    //   return new Grid(width, height, cells);
-    // }
 	static random(width, height) {
       let cells = new Array(width * height).fill(0);
       for (let i = 0; i < (width*height); i++) {
@@ -37,14 +24,6 @@
     cell(x, y) {
       return this.cells[x + y * this.width];
     }
-    // draw(cells) {
-    //   let copy = this.cells.slice();
-    //   for (let {x, y, color} of cells) {
-	// 	copy[x + y * this.width] = color;
-    //   }
-    //   return new Grid(this.width, this.height, copy);
-    // }
-
 	// Take an array of objects that represent the cells that are to
 	// be updated. The objects have x and y properties to get the
 	// position and state property to know whether the cell should be
@@ -63,6 +42,7 @@
     return Object.assign({}, state, action);
   }
 
+  // Create a dom element
   function elt(type, props, ...children) {
     let dom = document.createElement(type);
     if (props) Object.assign(dom, props);
@@ -152,11 +132,12 @@
 
   class GridEditor {
     constructor(state, config) {
-      let {controls, dispatch} = config;
+      let {tools, controls, dispatch} = config;
       this.state = state;
 
       this.canvas = new GridCanvas(state.grid, pos => {
-		let onMove = draw(pos, this.state, dispatch);
+		let tool = tools[this.state.tool];
+		let onMove = tool(pos, this.state, dispatch);
 		if (onMove) return pos => onMove(pos, this.state);
       });
 
@@ -174,6 +155,24 @@
     }
   }
   
+  function makeCellAlive(pos, state, dispatch) {
+    function drawCell({x, y}, state) {
+      let drawn = { x, y, state: 1 };
+	  dispatch({grid: state.grid.draw([drawn])});
+    }
+    drawCell(pos, state);
+    return drawCell;
+  }
+
+  function makeCellDead(pos, state, dispatch) {
+    function drawCell({x, y}, state) {
+      let drawn = { x, y, state: 0 };
+	  dispatch({grid: state.grid.draw([drawn])});
+    }
+    drawCell(pos, state);
+    return drawCell;
+  }
+
   function draw(pos, state, dispatch) {
     function drawCell({x, y}, state) {
       //let drawn = {x, y, color: state.color};
@@ -187,46 +186,6 @@
     return drawCell;
   }
 
-  // function newGeneration(grid, deadColor, aliveColor) {
-  //   let width = grid.width, height = grid.height;
-  //   let next = [];
-  //   let neighborIndexes;
-  //   let neighborValues;
-
-  //   for (let y = 0; y < height; y++) {
-  //     for (let x = 0; x < width; x++) {
-  // 		let cell = x + y * width;
-
-  // 		if (x === 0) {
-  //         if (y === 0) {
-  //           neighborIndexes = [cell + 1, cell + width, cell + (width + 1)];
-  //         } else if (y === height - 1) {
-  //           neighborIndexes = [cell + 1, cell - (width - 1), cell - width];
-  //         } else {
-  //           neighborIndexes = [cell + 1, cell - (width - 1), cell + width, cell - width, cell + (width + 1)];
-  //         }
-  // 		} else if (x === width - 1) {
-  //         if (y === height - 1) {
-  //           neighborIndexes = [cell - 1, cell - width, cell - (width + 1)];
-  //         } else if (y === 0) {
-  //           neighborIndexes = [cell - 1, cell + (width - 1), cell + width];
-  //         } else {
-  //           neighborIndexes = [cell - 1, cell + (width - 1), cell + width, cell - width, cell - (width + 1)];
-  //         }
-  // 		} else if (y === height - 1) {
-  //         neighborIndexes = [cell + 1, cell - 1, cell - (width - 1), cell - width, cell - (width + 1)];
-  // 		} else if (y === 0) {
-  //         neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell + width, cell + (width + 1)];
-  // 		} else {
-  //         neighborIndexes = [cell + 1, cell - 1, cell + (width - 1), cell - (width - 1), cell + width, cell - width, cell + (width + 1), cell - (width + 1)];
-  // 		}
-  // 		neighborValues = values(grid.cells, neighborIndexes);
-  // 		next.push(updateCell(grid.cells[cell], neighborValues, deadColor, aliveColor));
-  //     }
-  //   }
-
-  //   return new Grid(width, height, next);
-  // }
   function newGeneration(grid) {
     let width = grid.width, height = grid.height;
     let next = [];
@@ -268,26 +227,6 @@
     return new Grid(width, height, next);
   }
 
-
-  // Take cell and array of neighbors, return updated cell.
-  // function updateCell(cell, neighbors, deadColor, aliveColor) {
-  //   let liveNeighbors = 0;
-  //   for (let n of neighbors)
-  //     if (n === aliveColor)
-  //       liveNeighbors++;
-
-  //   if (cell === aliveColor) {
-  //     if (liveNeighbors < 2 || liveNeighbors > 3)
-  //       return deadColor; // cell dies :(
-  //     else if (liveNeighbors === 2 || liveNeighbors == 3)
-  //       return aliveColor; // cell keeps surviving :)
-  //   } else if (cell === deadColor) {
-  //     if (liveNeighbors === 3)
-  //       return aliveColor; // cell becomes alive :O
-  //     else
-  //       return deadColor;
-  //   }
-  // }
   function updateCell(cell, neighbors) {
     let liveNeighbors = 0;
     for (let n of neighbors)
@@ -307,7 +246,6 @@
     }
   }
 
-
   // Take array of values and an array of indexes of those values.
   // Return array of the values of those indexes.
   // Example:
@@ -320,7 +258,7 @@
     return result;
   }
 
-  class startButton {
+  class StartButton {
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.interval = state.interval;
@@ -346,7 +284,7 @@
     }
   }
 
-  class stopButton {
+  class StopButton {
     constructor(state, { dispatch }) {
       this.dom = elt("button", {
 		className: "button",
@@ -361,7 +299,7 @@
     }
   }
 
-  class clearButton {
+  class ClearButton {
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.dom = elt("button", {
@@ -378,7 +316,7 @@
     }
   }
 
-  class eraserButton {
+  class EraserButton {
     constructor(state, { dispatch }) {
       this.active = false;
       this.dom = elt("button", {
@@ -394,7 +332,19 @@
     syncState() {}
   }
 
-  class patternSelect {
+  class ToolSelect {
+	constructor(state, { tools, dispatch }) {
+      this.select = elt("select", {
+		onchange: () => dispatch({ tool: this.select.value })
+      }, ...Object.keys(tools).map(name => elt("option", {
+		selected: name == state.tool
+      }, name)));
+      this.dom = elt("label", null, "Tool: ", this.select);
+	}
+	syncState(state) { this.select.value = state.tool; }
+  }
+
+  class PatternSelect {
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.dom = elt("select", {id: "pattern",
@@ -421,7 +371,7 @@
     }
   }
 
-  class speedButtons {
+  class SpeedButtons {
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.dom = elt("span", {},
@@ -464,17 +414,22 @@
   }
 
   let startState = {
-    color: "#000000",
+    //color: "#000000",
+	tool: "makeCellAlive",
     grid: new Grid(100, 60, patterns.gosperGliderGun.cells),
     interval: undefined,
     speed: 180,
   };
 
-  let baseControls = [patternSelect, startButton, stopButton, clearButton, eraserButton, speedButtons];
+  let baseTools = { makeCellAlive, makeCellDead };
+
+  let baseControls = [PatternSelect, ToolSelect, StartButton, StopButton, ClearButton, EraserButton, SpeedButtons];
 
   function startGridEditor({ state = startState,
+							 tools = baseTools,
 							 controls = baseControls }) {
     let app = new GridEditor(state, {
+	  tools,
       controls,
       dispatch(action) {
 		state = updateState(state, action);
