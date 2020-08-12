@@ -12,16 +12,7 @@
       let cells = new Array(width * height).fill(0);
       return new Grid(width, height, cells);
     }
-	static random(width, height) {
-      let cells = new Array(width * height).fill(0);
-      for (let i = 0; i < (width*height); i++) {
-		if (Math.random() > 0.7) {
-    	  cells[i] = 1;
-		}
-      }
-      return new Grid(width, height, cells);
-    }
-    cell(x, y) {
+	cell(x, y) {
       return this.cells[x + y * this.width];
     }
 	// Take an array of objects that represent the cells that are to
@@ -323,18 +314,10 @@
 								  window.clearInterval(this.interval);
 								  dispatch({ interval: undefined });
 								  let pattern = e.target.value;
-								  if (pattern === "random") {
-									// dispatch({ grid: Grid.random(this.grid.width,
-									// 							 this.grid.height,
-									// 							 "#f0f0f0", "#000000") });
-									dispatch({ grid: Grid.random(this.grid.width,
-																 this.grid.height) });
-								  } else
-									dispatch({ grid: new Grid(100, 60, patterns[pattern].cells )});
+								  dispatch({ grid: new Grid(100, 60, patterns[pattern].cells )});
 								}
 							   },
 					 ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
-					 elt("option", {value: "random"}, "Random")
 					);
     }
     syncState(state) {
@@ -385,7 +368,6 @@
   }
 
   let startState = {
-    //color: "#000000",
 	tool: "makeCellAlive",
     grid: new Grid(100, 60, patterns.gosperGliderGun.cells),
     interval: undefined,
