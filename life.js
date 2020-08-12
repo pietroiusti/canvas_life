@@ -173,19 +173,6 @@
     return drawCell;
   }
 
-  function draw(pos, state, dispatch) {
-    function drawCell({x, y}, state) {
-      //let drawn = {x, y, color: state.color};
-      let drawn = {x, y, state: state.color === "#000000" ? 1 : 0};
-	  // TODO: don't use a variable that holds a color in the central
-	  // state, but a variable that says whether a cell that gets
-	  // clicked on is going to be made alive or dead
-      dispatch({grid: state.grid.draw([drawn])});
-    }
-    drawCell(pos, state);
-    return drawCell;
-  }
-
   function newGeneration(grid) {
     let width = grid.width, height = grid.height;
     let next = [];
@@ -316,22 +303,6 @@
     }
   }
 
-  class EraserButton {
-    constructor(state, { dispatch }) {
-      this.active = false;
-      this.dom = elt("button", {
-		className: "button",
-		onclick: event => {
-		  this.active = this.active === false ? true : false;
-		  // dispatch({ color: this.active === true ? "#f0f0f0" : "#000000"});
-		  dispatch({ color: this.active ? "#f0f0f0" : "#000000"});
-		  event.target.style.background = this.active ? "red" : "";
-		},
-      }, "Eraser");
-    }
-    syncState() {}
-  }
-
   class ToolSelect {
 	constructor(state, { tools, dispatch }) {
       this.select = elt("select", {
@@ -423,7 +394,7 @@
 
   let baseTools = { makeCellAlive, makeCellDead };
 
-  let baseControls = [PatternSelect, ToolSelect, StartButton, StopButton, ClearButton, EraserButton, SpeedButtons];
+  let baseControls = [PatternSelect, ToolSelect, StartButton, StopButton, ClearButton, SpeedButtons];
 
   function startGridEditor({ state = startState,
 							 tools = baseTools,
