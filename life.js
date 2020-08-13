@@ -146,7 +146,7 @@
     }
   }
   
-  function makeCellAlive(pos, state, dispatch) {
+  function draw(pos, state, dispatch) {
     function drawCell({x, y}, state) {
       let drawn = { x, y, state: 1 };
 	  dispatch({grid: state.grid.draw([drawn])});
@@ -155,7 +155,7 @@
     return drawCell;
   }
 
-  function makeCellDead(pos, state, dispatch) {
+  function erase(pos, state, dispatch) {
     function drawCell({x, y}, state) {
       let drawn = { x, y, state: 0 };
 	  dispatch({grid: state.grid.draw([drawn])});
@@ -300,7 +300,7 @@
 		onchange: () => dispatch({ tool: this.select.value })
       }, ...Object.keys(tools).map(name => elt("option", {
 		selected: name == state.tool
-      }, name)));
+	  }, name)));
       this.dom = elt("label", null, "Tool: ", this.select);
 	}
 	syncState(state) { this.select.value = state.tool; }
@@ -309,7 +309,7 @@
   class PatternSelect {
     constructor(state, { dispatch }) {
       this.grid = state.grid;
-      this.dom = elt("select", {id: "pattern",
+      this.select = elt("select", {id: "pattern",
 								onchange: (e) => {
 								  window.clearInterval(this.interval);
 								  dispatch({ interval: undefined });
@@ -318,7 +318,8 @@
 								}
 							   },
 					 ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
-					);
+					   );
+	  this.dom = elt("label:", null, "Pattern: ", this.select);
     }
     syncState(state) {
       this.interval = state.interval;
@@ -368,13 +369,13 @@
   }
 
   let startState = {
-	tool: "makeCellAlive",
+	tool: "draw",
     grid: new Grid(100, 60, patterns.gosperGliderGun.cells),
     interval: undefined,
     speed: 180,
   };
 
-  let baseTools = { makeCellAlive, makeCellDead };
+  let baseTools = { draw, erase };
 
   let baseControls = [PatternSelect, ToolSelect, StartButton, StopButton, ClearButton, SpeedButtons];
 
