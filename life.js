@@ -310,16 +310,16 @@
     constructor(state, { dispatch }) {
       this.grid = state.grid;
       this.select = elt("select", {id: "pattern",
-								onchange: (e) => {
-								  window.clearInterval(this.interval);
-								  dispatch({ interval: undefined });
-								  let pattern = e.target.value;
-								  dispatch({ grid: new Grid(100, 60, patterns[pattern].cells )});
-								}
-							   },
-					 ...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
+								   onchange: (e) => {
+									 window.clearInterval(this.interval);
+									 dispatch({ interval: undefined });
+									 let pattern = e.target.value;
+									 dispatch({ grid: new Grid(100, 60, patterns[pattern].cells )});
+								   }
+								  },
+						...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
 					   );
-	  this.dom = elt("label:", null, "Pattern: ", this.select);
+	  this.dom = elt("label", null, "Pattern: ", this.select);
     }
     syncState(state) {
       this.interval = state.interval;
