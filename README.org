@@ -37,3 +37,23 @@ function that the components must use to dispatch a function).
 The program starts by calling the _startGridEditor_ function, which
 creates the ``root component'' called _app_, an istance of
 _GridEditor_ (and appends its _dom_ property to the html page).
+
+The _state_ object is update using the _Object.assign function:
+#+begin_src javascript
+function updateState(state, action) {
+  return Object.assign({}, state, action);
+}
+#+end_src
+
+DOM elements are created using the _elt_ function:
+#+begin_src javascript
+function elt(type, props, ...children) {
+  let dom = document.createElement(type);
+  if (props) Object.assign(dom, props);
+  for (let child of children) {
+    if (typeof child != "string") dom.appendChild(child);
+    else dom.appendChild(document.createTextNode(child));
+  }
+  return dom;
+}
+#+end_src
