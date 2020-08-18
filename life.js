@@ -83,12 +83,12 @@
     if (!onMove) return;
     let move = moveEvent => {
       if (moveEvent.buttons == 0) { // if no button is being held down
-		this.dom.removeEventListener("mousemove", move);
+	this.dom.removeEventListener("mousemove", move);
       } else {
-		let newPos = pointerPosition(moveEvent, this.dom);
-		if (newPos.x == pos.x && newPos.y == pos.y) return;
-		pos = newPos;
-		onMove(newPos);
+	let newPos = pointerPosition(moveEvent, this.dom);
+	if (newPos.x == pos.x && newPos.y == pos.y) return;
+	pos = newPos;
+	onMove(newPos);
       }
     };
     this.dom.addEventListener("mousemove", move);
@@ -162,6 +162,132 @@
     }
     drawCell(pos, state);
     return drawCell;
+  }
+
+  function line(pos, state, dispatch) {
+    // ``naive algorithm'' from Wikipedia:
+    // dx = x2 - x1
+    // dy = y2 - y1
+    // for x from x1 to x2 {
+    //   y = y1 + dy * (x - x1) / dx
+    //   plot(x, y)
+    // }
+    let startPoint, endPoint;
+    function drawLine({x, y}) {
+      let line = [];
+      if (!startPoint)
+	startPoint = { x, y, state: 1 };
+      else
+	endPoint = { x, y, state: 1 };
+      if (endPoint) {
+	if (Math.abs(startPoint.x - endPoint.x) >
+	    Math.abs(startPoint.y - endPoint.y)) { //horizontalish line
+	  
+	  if (startPoint.x > endPoint.x) {
+	    // swap start and end
+	    let dx = startPoint.x - endPoint.x;
+	    let dy = startPoint.y - endPoint.y;
+	    for (let x = endPoint.x; x <= startPoint.x; x++) {
+	      let y = Math.floor(endPoint.y + dy * (x - endPoint.x) / dx);
+	      line.push({x, y, state: 1});
+	    }
+	  }
+	  else {
+	    let dx = endPoint.x - startPoint.x;
+	    let dy = endPoint.y - startPoint.y;
+	    for (let x = startPoint.x; x <= endPoint.x; x++) {
+	      let y = Math.floor(startPoint.y + dy * (x - startPoint.x) / dx);
+	      line.push({x, y, state: 1});
+	    }
+	  }
+	} else { //verticalish line
+	  if (startPoint.y > endPoint.y) {
+	    // swap start and end
+	    let dx = startPoint.x - endPoint.x;
+	    let dy = startPoint.y - endPoint.y;
+	    for (let y = endPoint.y; y <= startPoint.y; y++) {
+	      let x = Math.floor(endPoint.x + dx * (y - endPoint.y) / dy);
+	      line.push({x, y, state: 1});
+	    }
+	  } else {
+	    let dx = endPoint.x - startPoint.x;
+	    let dy = endPoint.y - startPoint.y;
+	    for (let y = startPoint.y; y <= endPoint.y; y++) {
+	      let x = Math.floor(startPoint.x + dx * (y - startPoint.y) / dy);
+	      line.push({x, y, state: 1});
+	    }
+	  }
+	}
+      }
+      dispatch({ grid: state.grid.draw(line) });
+    }
+    drawLine(pos);
+    return drawLine;
+  }
+
+  function rectangle(start, state, dispatch) {
+    function drawRectangle(pos) {
+      let xStart = Math.min(start.x, pos.x);
+      let yStart = Math.min(start.y, pos.y);
+      let xEnd = Math.max(start.x, pos.x);
+      let yEnd = Math.max(start.y, pos.y);
+      let drawn = [];
+      for (let y = yStart; y <= yEnd; y++) {
+	for (let x = xStart; x <= xEnd; x++) {
+          drawn.push({ x, y, state: 1 });
+	}
+      }
+      dispatch({ grid: state.grid.draw(drawn) });
+    }
+    drawRectangle(start);
+    return drawRectangle;
+  }
+
+  function circle(start, state, dispatch) {
+    function drawCircle(pos) {
+      //get distance between start and current pointer (radius)
+      let xStart = Math.min(start.x, pos.x);
+      let yStart = Math.min(start.y, pos.y);
+      let xEnd = Math.max(start.x, pos.x);
+      let yEnd = Math.max(start.y, pos.y);
+      let xDiff = xEnd - xStart;
+      let yDiff = yEnd - yStart;
+      let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+      console.log(`distance: ${radius}`);
+      let drawn = [];
+      //loop over a square of pixels around the start position,
+      //whose sides are at least twice the radius. Color those that
+      //are withing the circle radius
+      console.log(`start: x: ${xStart}, y: ${yStart}`);
+      let rectStart = { x: xStart - Math.floor(radius), y: yStart - Math.floor(radius) };
+      console.log(`floor(radius): ${Math.floor(radius)}`);
+      console.log(`rectStart: ${rectStart.x}, ${rectStart.y}`);
+      let rectEnd = { x: xStart + Math.floor(radius), y: yStart + Math.floor(radius) };
+      console.log(`rectEnd: ${rectEnd.x}, ${rectEnd.y}`);
+      console.log(state.grid.width);
+      console.log(state.grid.height);
+      for (let y = rectStart.y; y <= rectEnd.y; y++) {
+	for (let x = rectStart.x; x <= rectEnd.x; x++) {
+          console.log(`x: ${x}, y: ${y}`);
+          if (x < state.grid.width && x > 0) {
+            // get distance from current pixel to the starting pixel
+            let xd = x - xStart;
+            let yd = y - yStart;
+            let distance = Math.sqrt(Math.pow(xd, 2) + Math.pow(yd, 2));
+            // (is the distance from current pixel to the starting
+            // pixel less or equal to the radius?)
+            if (distance < radius) {
+              // color pixel if conditions are met
+              drawn.push({ x, y, state: 1 });
+            }
+          }
+	}
+      }
+
+      dispatch({ grid: state.grid.draw(drawn) });
+    }
+    drawCircle(start);
+    return drawCircle;
   }
 
   function newGeneration(grid) {
@@ -376,7 +502,7 @@
     speed: 180,
   };
 
-  let baseTools = { draw, erase };
+  let baseTools = { draw, erase, line, rectangle, circle };
 
   let baseControls = [PatternSelect, ToolSelect, StartButton, StopButton, ClearButton, SpeedButtons];
 
