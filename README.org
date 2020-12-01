@@ -1,6 +1,6 @@
 * Conway's game of life.
 
-https://glptrst.github.io/canvas_life/life.html
+https://pietroiusti.github.io/canvas_life/life.html
 
 The program is build on top of /components/. No library is used. The
 way components are structured is based on [[https://eloquentjavascript.net/][Eloquent Javascript 2nd
