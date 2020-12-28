@@ -502,7 +502,7 @@
     speed: 180,
   };
 
-  let baseTools = { draw, erase, line, rectangle, circle };
+  let baseTools = { draw, erase, line, rectangle, /*circle*/ };
 
   let baseControls = [PatternSelect, ToolSelect, StartButton, StopButton, ClearButton, SpeedButtons];
 
