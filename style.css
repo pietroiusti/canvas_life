@@ -1,0 +1,84 @@
+html {
+    /* color: yellow; */
+    /* background-color: grey; */
+    font-family: 'VT323', monospace;
+}
+
+#header {
+    display: flex;
+    width: 70%;
+    margin: auto;
+}
+
+#headerLeft {
+    flex: 50%;
+}
+
+#headerRight {
+    flex: 50%;
+    margin: auto;
+    margin-left: 30px;
+    display:flex;
+}
+
+.rule {
+    margin: 5px;
+    width: 30%;
+}
+
+h1 {
+    font-family: 'VT323', monospace;
+    text-align: center;
+    font-size: 50px;
+}
+
+canvas {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button {
+    background-color: #e7e7e7;
+    border: none;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+        font-family: 'VT323', monospace;
+}
+.button:focus {
+    outline: none;
+    box-shadow: none;
+}
+button::-moz-focus-inner {
+    border: 0;
+}
+button:hover {
+    background-color: yellow;
+}
+#controls {
+    display: block;
+    width: 900;
+    margin-left: auto;
+    margin-right: auto;
+}
+#footer {
+    /*position: fixed;*/
+    padding: 70px;
+    text-align: center;
+}
+select {
+    font-family: 'VT323', monospace;
+}

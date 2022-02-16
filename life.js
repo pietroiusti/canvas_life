@@ -70,6 +70,7 @@
     for (let y = 0; y < grid.height; y++) {
       for (let x = 0; x < grid.width; x++) {
 	cx.fillStyle = grid.cell(x, y) === 0 ? "#f0f0f0" : "#000000";
+	// cx.fillStyle = grid.cell(x, y) === 0 ? "yellow" : "black";
 	cx.fillRect(x * scale, y * scale, scale, scale);
       }
     }
@@ -379,7 +380,7 @@
 	    dispatch({ interval: autoInterval });
 	  }
 	},
-      }, "Start");
+      }, "START");
     }
     syncState(state) {
       this.grid = state.grid;
@@ -396,7 +397,7 @@
 	  window.clearInterval(this.interval);
 	  dispatch({ interval: undefined });
 	},
-      }, "Stop");
+      }, "STOP");
     }
     syncState(state) {
       this.interval = state.interval;
@@ -413,7 +414,7 @@
 	  // dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, "#f0f0f0"), interval: undefined });
 	  dispatch({ grid:Grid.empty(this.grid.width, this.grid.height, 0), interval: undefined });
 	},
-      }, "Clear");
+      }, "CLEAR");
     }
     syncState(state) {
       this.interval = state.interval;
@@ -427,8 +428,8 @@
       }, ...Object.keys(tools).map(name => elt("option", {
 	//selected: name == state.tool,
 	value: name
-      }, name[0].toUpperCase() + name.slice(1))));
-      this.dom = elt("label", null, "Tool: ", this.select);
+      }, name.toUpperCase() )));
+      this.dom = elt("label", null, "TOOL: ", this.select);
     }
     syncState(state) { this.select.value = state.tool; }
   }
@@ -446,7 +447,7 @@
 				  },
 			...Object.keys(patterns).map((key, index) => elt("option", {value: key}, patterns[key].name)),
 		       );
-      this.dom = elt("label", null, "Pattern: ", this.select);
+      this.dom = elt("label", null, "PATTERN: ", this.select);
     }
     syncState(state) {
       this.interval = state.interval;
@@ -471,7 +472,7 @@
 			   dispatch({ speed: speed });
 			 }
 		       }
-		     }, "-"), " ", "speed", " ",
+		     }, "-"), " ", "SPEED", " ",
 		     elt("button", {
 		       onclick: () => {
 			 let speed = this.speed - 30;
