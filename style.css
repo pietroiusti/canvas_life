@@ -31,6 +31,12 @@ h1 {
     font-family: 'VT323', monospace;
     text-align: center;
     font-size: 50px;
+    background-color: #f0f0f0;
+}
+
+.ruleTitle {
+    font-weight: bold;
+    background-color: #f0f0f0;
 }
 
 canvas {
@@ -40,7 +46,7 @@ canvas {
 }
 
 .button {
-    background-color: #e7e7e7;
+    background-color: #f0f0f0;
     border: none;
     color: black;
     padding: 15px 32px;
