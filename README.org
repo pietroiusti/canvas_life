@@ -2,8 +2,8 @@
 
 https://pietroiusti.github.io/canvas_life/life.html
 
-The program is build on top of /components/. No library is used. The
-way components are structured is based on [[https://eloquentjavascript.net/][Eloquent Javascript 2nd
+The program is built on top of /components/. No library is used. The
+way components are structured is based on [[https://eloquentjavascript.net/][Eloquent Javascript 3rd
 Ed. Chapter 19]]. Components are ``objects that are responsible for a
 piece of the DOM and that thay may contain other components inside
 them''.
@@ -16,7 +16,7 @@ her/himself.
 The state of the application (consistings in _tool_, _grid_,
 _interval_, _speed_) lives in the _state_ variable within the scope of
 _startGridEditor_. A component responds to a certain action by
-updating the central _state_. When this happens, every compoment can
+updating the central _state_. When this happens, every component can
 look at the _state_ and update itself look accordingly. When a
 component is given a new state, it notifies its child components as
 well.
